@@ -1,0 +1,26 @@
+{
+  "name": "GaiaCI Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "rust-lang.rust-analyzer",
+    "vadimcn.vscode-lldb",
+    "tamasfe.even-better-toml",
+    "ms-azuretools.vscode-docker",
+    "sumneko.lua",
+    "serayuzgur.crates"
+  ],
+  "postCreateCommand": "rustup component add clippy rustfmt && cargo install just cargo-watch",
+  "mounts": [
+    "source=${localWorkspaceFolder}/.cargo,target=/root/.cargo,type=bind,consistency=cached"
+  ],
+  "remoteUser": "root",
+  "features": {},
+  "containerEnv": {
+    "CARGO_TERM_COLOR": "always"
+  }
+}
