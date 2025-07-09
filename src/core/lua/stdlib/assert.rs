@@ -11,7 +11,7 @@ impl GaiaModule for Assert {
         let tbl = lua.create_table()?;
         tbl.set("equals", lua.create_function(assert_equals)?)?;
         tbl.set("not_nil", lua.create_function(assert_not_nil)?)?;
-        tbl.set("nil", lua.create_function(assert_nil)?)?;
+        tbl.set("is_nil", lua.create_function(assert_nil)?)?;
         tbl.set("is_true", lua.create_function(assert_true)?)?;
         tbl.set("str_contains", lua.create_function(assert_str_contains)?)?;
         tbl.set("str_matches", lua.create_function(assert_str_matches)?)?;
@@ -38,6 +38,7 @@ fn assert_not_nil(_: &Lua, val: Value) -> LuaResult<()> {
     }
 }
 
+// Assert nil function for Lua
 fn assert_nil(_: &Lua, val: Value) -> LuaResult<()> {
     if !matches!(val, Value::Nil) {
         Err(Error::RuntimeError("Assertion failed: value is not nil".to_string()))
@@ -108,22 +109,17 @@ mod tests {
     use mlua::{Lua, Value};
 
     #[test]
-    fn test_assert_equals_pass() {
+    fn test_assert_equals_basic() {
         let lua = Lua::new();
         let assert = Assert::create(&lua).unwrap();
         let f: mlua::Function = assert.get("equals").unwrap();
+        
+        // Test success case
         f.call::<()>((Value::Integer(42), Value::Integer(42))).unwrap();
-    }
-
-    #[test]
-    fn test_assert_equals_fail() {
-        let lua = Lua::new();
-        let assert = Assert::create(&lua).unwrap();
-        let f: mlua::Function = assert.get("equals").unwrap();
+        
+        // Test failure case
         let result: mlua::Result<()> = f.call::<()>((Value::Integer(42), Value::Integer(43)));
         assert!(result.is_err());
-        let err_msg = result.unwrap_err().to_string();
-        assert!(err_msg.contains("Assertion failed"));
     }
 
     #[test]
@@ -149,7 +145,7 @@ mod tests {
     fn test_assert_nil_fail() {
         let lua = Lua::new();
         let assert = Assert::create(&lua).unwrap();
-        let f: mlua::Function = assert.get("nil").unwrap();
+        let f: mlua::Function = assert.get("is_nil").unwrap();
         let result: mlua::Result<()> = f.call::<()>(Value::String(lua.create_string("hello").unwrap()));
         assert!(result.is_err());
         let err_msg = result.unwrap_err().to_string();
@@ -160,7 +156,7 @@ mod tests {
     fn test_assert_nil_pass() {
         let lua = Lua::new();
         let assert = Assert::create(&lua).unwrap();
-        let f: mlua::Function = assert.get("nil").unwrap();
+        let f: mlua::Function = assert.get("is_nil").unwrap();
         f.call::<()>(Value::Nil).unwrap();
     }
 

@@ -232,107 +232,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 GaiaCI is designed for flexibility, performance, and modern CI/CD needs. Planned and proposed features include:
 
-| Feature                | Description                                      | Status   |
-|------------------------|--------------------------------------------------|----------|
-| Artifacts              | Share files between jobs/steps                   | 🚧       |
-| Caching                | Speed up builds with persistent caches           | 🚧       |
-| Matrix Builds          | Run jobs with multiple parameter sets            | 🚧       |
-| Manual Gates           | Require approval for certain jobs                | 🚧       |
-| Notifications          | Slack/email/webhook integration                  | 🚧       |
-| Retry/Timeout          | Configurable retries and timeouts                | 🚧       |
-| Templates              | Reusable pipeline/job definitions                | 🚧       |
-| Permissions            | Role-based access control                        | 🚧       |
-| Audit Logging          | Track all actions and accesses                   | 🚧       |
-| Auto-Scaling           | Dynamic runner management                        | 🚧       |
-| Dashboard              | Web/TUI UI for monitoring                        | 🚧       |
-| Visualization          | Pipeline/job dependency graphs                   | 🚧       |
-| Secret Policies        | Restrict secret/env access                       | 🚧       |
-| Plugin System          | User-extensible with plugins                     | 🚧       |
-
----
-
-### Example: Matrix Builds
-
-```lua
-return {
-  name = "test-matrix",
-  matrix = {
-    os = {"ubuntu-latest", "windows-latest"},
-    rust = {"stable", "nightly"}
-  },
-  jobs = {
-    test = {
-      run = "cargo test"
-    }
-  }
-}
-```
-
----
-
-### Example: Artifacts
-
-```lua
-return {
-  name = "build-artifact",
-  jobs = {
-    build = {
-      run = "cargo build --release",
-      artifacts = { "target/release/myapp" }
-    },
-    test = {
-      needs = { "build" },
-      run = "cargo test"
-    }
-  }
-}
-```
-
----
-
-### Example: Manual Gates
-
-```lua
-return {
-  name = "deploy-prod",
-  jobs = {
-    approve = {
-      manual = true,
-      run = "echo 'Waiting for approval...'"
-    },
-    deploy = {
-      needs = { "approve" },
-      run = "./deploy.sh"
-    }
-  }
-}
-```
-
----
-
-### Example: Notifications
-
-```lua
-return {
-  name = "notify",
-  jobs = {
-    notify = {
-      run = "echo 'Build finished!'",
-      notify = { slack = "#ci-alerts", email = "devs@example.com" }
-    }
-  }
-}
-```
-
----
-
-These features are under active design and community feedback is welcome!  
-See the [roadmap](#-roadmap-highlights) and [issues](https://github.com/wjpin84/gaiaci/issues) for progress and to suggest new features.
-
----
-
-## 📜 License
-
-MIT License © 2025 [Justin Preece](https://github.com/wjpin84)
-
----
+| Feature                | Description                                      | Status   | Notes/Scope                                 |
+|------------------------|--------------------------------------------------|----------|---------------------------------------------|
+| Artifacts              | Share files between jobs/steps                   | 🚧       | Useful for most workflows                   |
+| Caching                | Speed up builds with persistent caches           | 🚧       | Useful for local and edge                   |
+| Matrix Builds          | Run jobs with multiple parameter sets            | 🚧       | Useful for testing, can be local            |
+| Manual Gates           | Require approval for certain jobs                | 🚧       | Optional, more useful for teams             |
+| Notifications          | Slack/email/webhook integration                  | 🚧       | Useful for edge/local and server            |
+| Retry/Timeout          | Configurable retries and timeouts                | 🚧       | Important for robustness                    |
+| Templates              | Reusable pipeline/job definitions                | 🚧       | DRY, fits all modes                         |
+| Permissions            | Role-based access control                        | 🚧       | Optional, mainly for server/multi-user      |
+| Audit Logging          | Track all actions and accesses                   | 🚧       | Optional, mainly for server/multi-user      |
+| Auto-Scaling           | Dynamic runner management                        | ❌       | Not relevant for local/edge                 |
+| Dashboard (TUI/Web)    | UI for monitoring pipelines/jobs                 | 🚧       | TUI fits local/edge, web is optional        |
+| Visualization          | Pipeline/job dependency graphs                   | 🚧       | Nice-to-have, not essential                 |
+| Secret Policies        | Restrict secret/env access                       | 🚧       | Important for all modes                     |
+| Plugin System          | User-extensible with plugins                     | 🚧       | Fits all modes, especially for edge         |
+````
