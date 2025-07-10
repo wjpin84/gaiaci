@@ -1,18 +1,18 @@
-use gaiaci::core::lua::stdlib::assert::Assert;
-use gaiaci::core::lua::stdlib::shell::Shell;
-use gaiaci::core::lua::stdlib::log::Log;
-use gaiaci::core::lua::stdlib::fs::Fs;
-use gaiaci::core::lua::stdlib::GaiaModule;
+use gaiaci::core::lua::assert::Assert;
+use gaiaci::core::lua::shell::Shell;
+use gaiaci::core::lua::log::Log;
+use gaiaci::core::lua::fs::Fs;
+use gaiaci::core::lua::GaiaModule;
 use mlua::{Lua, Result as LuaResult, Value};
 
-/// Creates a Lua context with all stdlib modules loaded for testing
+/// Creates a Lua context with all GaiaCI modules loaded for testing
 pub fn create_test_lua() -> LuaResult<Lua> {
     let lua = Lua::new();
     
     // Load standard libraries
     lua.load_std_libs(mlua::StdLib::ALL_SAFE)?;
     
-    // Load GaiaCI stdlib modules
+    // Load GaiaCI modules
     let assert_module = Assert::create(&lua)?;
     lua.globals().set("assert", assert_module)?;
     

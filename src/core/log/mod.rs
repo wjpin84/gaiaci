@@ -37,7 +37,9 @@ pub mod levels;
 pub mod sink;
 pub mod sinks;
 pub mod global;
+pub mod formatters;
 
 pub use levels::LogLevel;
 pub use sink::LogSink;
+pub use formatters::{LogFormatter, LogContext, SimpleFormatter, DetailedFormatter, TemplateFormatter};
 pub use global::{set_logger, log, info, warn, error, debug, trace};

@@ -170,3 +170,67 @@ fn test_nested_table_assertions() {
     
     assert!(result.is_ok());
 }
+
+#[test]
+fn test_lua_assert_with_custom_messages() {
+    let lua = create_test_lua().unwrap();
+    
+    // Test equals with custom message
+    let result = execute_lua_code(&lua, r#"
+        assert.equals(42, 42, "Numbers should be equal")
+        return "success"
+    "#);
+    assert!(result.is_ok());
+    
+    // Test failed assertion with custom message
+    let result = execute_lua_code(&lua, r#"
+        assert.equals(1, 2, "Expected calculation result to be correct")
+    "#);
+    assert!(result.is_err());
+    let error_msg = result.unwrap_err().to_string();
+    assert!(error_msg.contains("Expected calculation result to be correct"));
+}
+
+#[test]
+fn test_lua_ci_pipeline_assertions_with_messages() {
+    let lua = create_test_lua().unwrap();
+    
+    // Test comprehensive CI pipeline assertions with descriptive messages
+    let result = execute_lua_code(&lua, r#"
+        -- Simulate CI pipeline data
+        local build_result = {
+            success = true,
+            exit_code = 0,
+            output = "Build completed successfully",
+            artifacts = {"app.jar", "docs.zip"}
+        }
+        
+        -- Assert with descriptive messages
+        assert.is_true(build_result.success, "Build should have succeeded")
+        assert.equals(build_result.exit_code, 0, "Exit code should be 0 for successful build")
+        assert.str_contains(build_result.output, "successfully", "Output should contain success message")
+        assert.table_has_key(build_result, "artifacts", "Build result should include artifacts list")
+        assert.not_nil(build_result.artifacts, "Artifacts list should not be nil")
+        
+        return "all_assertions_passed"
+    "#);
+    
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().as_str().unwrap(), "all_assertions_passed");
+}
+
+#[test]
+fn test_lua_assertion_failure_with_context() {
+    let lua = create_test_lua().unwrap();
+    
+    // Test that custom messages provide better debugging context
+    let result = execute_lua_code(&lua, r#"
+        local config = {database_host = "localhost"}
+        assert.table_has_key(config, "database_url", "Configuration missing required database_url")
+    "#);
+    
+    assert!(result.is_err());
+    let error_msg = result.unwrap_err().to_string();
+    assert!(error_msg.contains("Configuration missing required database_url"));
+    assert!(error_msg.contains("table missing key"));
+}

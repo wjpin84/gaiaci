@@ -31,14 +31,14 @@
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! use gaiaci::core::log::{set_logger, info};
 //! use gaiaci::core::log::sinks::stdout::StdoutSink;
-//! use gaiaci::core::lua::stdlib::register_gaia_lib;
+//! use gaiaci::core::lua::register_gaia_lib;
 //! use mlua::Lua;
 //! 
 //! // Set up logging
 //! set_logger(StdoutSink);
 //! info("GaiaCI core initialized");
 //! 
-//! // Set up Lua environment with GaiaCI stdlib
+//! // Set up Lua environment with GaiaCI modules
 //! let lua = Lua::new();
 //! register_gaia_lib(&lua)?;
 //! 

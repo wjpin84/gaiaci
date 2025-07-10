@@ -533,4 +533,187 @@ fn test_lua_shell_comprehensive_ci_workflow() {
         assert_eq!(total_steps, 8);
         assert_eq!(successful_steps, 8);
     }
+}    #[test]
+    fn test_lua_shell_environment_detection() {
+        let lua = create_test_lua().unwrap();        let script = r#"
+            -- Test all environment detection functions
+            local pwd_result = shell.pwd()
+            local shell_result = shell.shell()
+            local os_result = shell.os()
+            local arch_result = shell.arch()
+            
+            -- Verify results are non-empty strings
+            assert.not_nil(pwd_result, "pwd should not be nil")
+            assert.not_nil(shell_result, "shell should not be nil")
+            assert.not_nil(os_result, "os should not be nil")
+            assert.not_nil(arch_result, "arch should not be nil")
+            
+            return {
+                pwd = pwd_result,
+                shell = shell_result,
+                os = os_result,
+                arch = arch_result
+            }
+        "#;
+    
+    let result: mlua::Table = lua.load(script).eval().expect("Environment detection script should succeed");
+    
+    let pwd: String = result.get("pwd").unwrap();
+    let shell: String = result.get("shell").unwrap();
+    let os: String = result.get("os").unwrap();
+    let arch: String = result.get("arch").unwrap();
+    
+    // Verify pwd returns an absolute path
+    assert!(pwd.starts_with('/') || (pwd.len() >= 3 && pwd.chars().nth(1) == Some(':')));
+    
+    // Verify shell is a known type
+    let known_shells = vec!["bash", "zsh", "sh", "fish", "cmd", "pwsh", "powershell", "unknown"];
+    assert!(known_shells.contains(&shell.as_str()));
+    
+    // Verify OS is a known type
+    let known_os = vec!["linux", "windows", "macos", "freebsd", "openbsd", "netbsd", "unknown"];
+    assert!(known_os.contains(&os.as_str()));
+    
+    // Verify architecture is a known type
+    let known_archs = vec!["x86_64", "aarch64", "x86", "arm", "riscv64", "unknown"];
+    assert!(known_archs.contains(&arch.as_str()));
+}    #[test]
+    fn test_lua_shell_which_command() {
+        let lua = create_test_lua().unwrap();        let script = r#"
+            -- Test the which function
+            local test_cmd = "NONEXISTENT_COMMAND_12345"
+            
+            -- Test with a command that should exist
+            local shell_cmd = "sh"  -- Should exist on Unix systems
+            if shell.os() == "windows" then
+                shell_cmd = "cmd"  -- Use cmd on Windows
+            end
+            
+            local success, path = pcall(function()
+                return shell.which(shell_cmd)
+            end)
+            
+            -- Test with a command that shouldn't exist
+            local fail_success, fail_result = pcall(function()
+                return shell.which(test_cmd)
+            end)
+            
+            return {
+                found_command = success,
+                found_path = path or "",
+                not_found = not fail_success
+            }
+        "#;
+    
+    let result: mlua::Table = lua.load(script).eval().expect("Which command script should succeed");
+    
+    let found_command: bool = result.get("found_command").unwrap();
+    let found_path: String = result.get("found_path").unwrap();
+    let not_found: bool = result.get("not_found").unwrap();
+    
+    // Should find the basic shell command
+    assert!(found_command, "Should find basic shell command");
+    assert!(!found_path.is_empty(), "Path should not be empty when command is found");
+    
+    // Should not find the nonexistent command
+    assert!(not_found, "Should not find nonexistent command");
+}    #[test]
+    fn test_lua_shell_platform_specific_workflow() {
+        let lua = create_test_lua().unwrap();        let script = r#"
+            -- Test a platform-aware CI workflow
+            local os_name = shell.os()
+            local arch = shell.arch()
+            local current_dir = shell.pwd()
+            
+            -- Build a platform-specific configuration
+            local config = {
+                platform = os_name .. "-" .. arch,
+                working_dir = current_dir,
+                package_manager = "unknown"
+            }
+            
+            -- Determine package manager based on OS
+            if os_name == "linux" then
+                local success, _ = pcall(function() return shell.which("apt-get") end)
+                if success then
+                    config.package_manager = "apt"
+                else
+                    local yum_success, _ = pcall(function() return shell.which("yum") end)
+                    if yum_success then
+                        config.package_manager = "yum"
+                    end
+                end
+            elseif os_name == "macos" then
+                local success, _ = pcall(function() return shell.which("brew") end)
+                if success then
+                    config.package_manager = "brew"
+                end
+            elseif os_name == "windows" then
+                local success, _ = pcall(function() return shell.which("choco") end)
+                if success then
+                    config.package_manager = "choco"
+                else
+                    local winget_success, _ = pcall(function() return shell.which("winget") end)
+                    if winget_success then
+                        config.package_manager = "winget"
+                    end
+                end
+            end
+            
+            return config
+        "#;
+    
+    let result: mlua::Table = lua.load(script).eval().expect("Platform workflow script should succeed");
+    
+    let platform: String = result.get("platform").unwrap();
+    let working_dir: String = result.get("working_dir").unwrap();
+    let package_manager: String = result.get("package_manager").unwrap();
+    
+    // Verify platform string format
+    assert!(platform.contains('-'), "Platform should be in format 'os-arch'");
+    
+    // Verify working directory
+    assert!(!working_dir.is_empty(), "Working directory should not be empty");
+    
+    // Package manager should be detected or "unknown"
+    let known_managers = vec!["apt", "yum", "brew", "choco", "winget", "unknown"];
+    assert!(known_managers.contains(&package_manager.as_str()));
+}    #[test]
+    fn test_lua_shell_environment_variables_integration() {
+        let lua = create_test_lua().unwrap();        let script = r#"
+            -- Test environment detection with shell execution
+            local os_name = shell.os()
+            local shell_name = shell.shell()
+            
+            -- Run a simple command that should work on all platforms
+            local test_cmd = "echo test_output"
+            if os_name == "windows" then
+                test_cmd = "echo test_output"  -- Works on both cmd and PowerShell
+            end
+            
+            local result = shell.run({
+                cmd = test_cmd,
+                capture = true
+            })
+            
+            return {
+                os = os_name,
+                shell = shell_name,
+                command_success = result.success,
+                command_output = result.stdout
+            }
+        "#;
+    
+    let result: mlua::Table = lua.load(script).eval().expect("Environment integration script should succeed");
+    
+    let os: String = result.get("os").unwrap();
+    let shell: String = result.get("shell").unwrap();
+    let command_success: bool = result.get("command_success").unwrap();
+    let command_output: String = result.get("command_output").unwrap();
+    
+    // Basic validations
+    assert!(!os.is_empty(), "OS should be detected");
+    assert!(!shell.is_empty(), "Shell should be detected");
+    assert!(command_success, "Simple echo command should succeed");
+    assert!(command_output.contains("test_output"), "Output should contain test string");
 }

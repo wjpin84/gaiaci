@@ -223,14 +223,30 @@ mod tests {
         
         set_logger(test_sink);
         
+        // Use unique messages to identify our test's output
+        let unique_id = std::process::id();
+        let unique_info = format!("Test info message {}", unique_id);
+        let unique_error = format!("Test error message {}", unique_id);
+        
         // Test logging at different levels
-        log(LogLevel::Info, "Test info message");
-        log(LogLevel::Error, "Test error message");
+        log(LogLevel::Info, &unique_info);
+        log(LogLevel::Error, &unique_error);
+        
+        // Give a moment for logging to complete
+        std::thread::sleep(std::time::Duration::from_millis(10));
         
         let captured = messages.lock().unwrap();
-        assert_eq!(captured.len(), 2);
-        assert_eq!(captured[0], (LogLevel::Info, "Test info message".to_string()));
-        assert_eq!(captured[1], (LogLevel::Error, "Test error message".to_string()));
+        
+        // Find our messages in the captured log (other tests may have added messages)
+        let info_found = captured.iter().any(|(level, msg)| 
+            *level == LogLevel::Info && msg == &unique_info
+        );
+        let error_found = captured.iter().any(|(level, msg)| 
+            *level == LogLevel::Error && msg == &unique_error
+        );
+        
+        assert!(info_found, "Info message not found in log: {:?}", *captured);
+        assert!(error_found, "Error message not found in log: {:?}", *captured);
     }
 
     #[test]

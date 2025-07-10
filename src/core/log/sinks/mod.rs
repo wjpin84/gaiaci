@@ -7,6 +7,7 @@
 //! ## Available Sinks
 //! 
 //! - **stdout** - Outputs log messages to standard output with basic formatting
+//! - **configurable_stdout** - Configurable stdout sink with custom formatters
 //! 
 //! ## Future Sinks
 //! 
@@ -17,3 +18,4 @@
 //! - **buffer** - Buffered output for high-throughput scenarios
 
 pub mod stdout;
+pub mod configurable_stdout;
