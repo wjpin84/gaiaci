@@ -23,7 +23,7 @@ use std::fmt;
 /// ## Usage
 /// 
 /// ```rust
-/// use gaiaci::core::log::LogLevel;
+/// use gaiaci_core::log::LogLevel;
 /// 
 /// let level = LogLevel::Info;
 /// println!("Current log level: {}", level); // Prints: "Current log level: INFO"
@@ -51,7 +51,7 @@ impl fmt::Display for LogLevel {
     /// # Examples
     /// 
     /// ```rust
-    /// use gaiaci::core::log::LogLevel;
+    /// use gaiaci_core::log::LogLevel;
     /// assert_eq!(format!("{}", LogLevel::Info), "INFO");
     /// assert_eq!(format!("{}", LogLevel::Error), "ERROR");
     /// ```
@@ -82,7 +82,7 @@ impl LogLevel {
     /// # Example
     /// 
     /// ```rust
-    /// use gaiaci::core::log::LogLevel;
+    /// use gaiaci_core::log::LogLevel;
     /// 
     /// assert!(LogLevel::Error.is_at_least(LogLevel::Warn));
     /// assert!(LogLevel::Info.is_at_least(LogLevel::Info));
@@ -100,7 +100,7 @@ impl LogLevel {
     /// # Example
     /// 
     /// ```rust
-    /// use gaiaci::core::log::LogLevel;
+    /// use gaiaci_core::log::LogLevel;
     /// 
     /// assert_eq!(LogLevel::Info.to_lowercase(), "info");
     /// assert_eq!(LogLevel::Error.to_lowercase(), "error");
@@ -131,7 +131,7 @@ impl LogLevel {
     /// # Example
     /// 
     /// ```rust
-    /// use gaiaci::core::log::LogLevel;
+    /// use gaiaci_core::log::LogLevel;
     /// 
     /// assert_eq!(LogLevel::from_str("info"), Some(LogLevel::Info));
     /// assert_eq!(LogLevel::from_str("INFO"), Some(LogLevel::Info));

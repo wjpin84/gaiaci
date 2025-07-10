@@ -1,8 +1,8 @@
-use gaiaci::core::lua::assert::Assert;
-use gaiaci::core::lua::shell::Shell;
-use gaiaci::core::lua::log::Log;
-use gaiaci::core::lua::fs::Fs;
-use gaiaci::core::lua::GaiaModule;
+use gaiaci_core::lua::assert::Assert;
+use gaiaci_core::lua::shell::Shell;
+use gaiaci_core::lua::log::Log;
+use gaiaci_core::lua::fs::Fs;
+use gaiaci_core::lua::GaiaModule;
 use mlua::{Lua, Result as LuaResult, Value};
 
 /// Creates a Lua context with all GaiaCI modules loaded for testing

@@ -3,7 +3,7 @@
 //! This module defines the `LogSink` trait, which provides the interface for
 //! implementing custom log output destinations in the GaiaCI logging system.
 
-use crate::core::log::levels::LogLevel;
+use crate::log::levels::LogLevel;
 
 /// Trait for implementing custom log output destinations.
 /// 
@@ -24,7 +24,7 @@ use crate::core::log::levels::LogLevel;
 /// ## Implementation Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::{LogSink, LogLevel};
+/// use gaiaci_core::log::{LogSink, LogLevel};
 /// 
 /// struct FileSink {
 ///     file_path: String,

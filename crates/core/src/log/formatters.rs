@@ -4,7 +4,7 @@
 //! logging system. It supports template-based formatting with various placeholders
 //! for timestamps, log levels, user information, and custom fields.
 
-use crate::core::log::LogLevel;
+use crate::log::LogLevel;
 use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 

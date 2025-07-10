@@ -3,7 +3,7 @@
 //! This module provides a configurable stdout sink that supports custom
 //! log formatters for flexible output formatting.
 
-use crate::core::log::{LogSink, LogLevel, LogFormatter, LogContext, SimpleFormatter};
+use crate::log::{LogSink, LogLevel, LogFormatter, LogContext, SimpleFormatter};
 use std::sync::Arc;
 
 /// A configurable log sink that outputs messages to standard output.
@@ -14,10 +14,9 @@ use std::sync::Arc;
 /// 
 /// ## Example Usage
 /// 
-/// ```rust
-/// use gaiaci::core::log::{set_logger, info};
-/// use gaiaci::core::log::sinks::configurable_stdout::ConfigurableStdoutSink;
-/// use gaiaci::core::log::formatters::TemplateFormatter;
+/// ```rust /// use gaiaci_core::log::{set_logger, info};
+ /// use gaiaci_core::log::sinks::configurable_stdout::ConfigurableStdoutSink;
+ /// use gaiaci_core::log::formatters::TemplateFormatter;
 /// 
 /// // Create a sink with custom formatting
 /// let formatter = TemplateFormatter::new("[{timestamp:%H:%M:%S}] [{level}] {message}");
@@ -54,13 +53,13 @@ impl ConfigurableStdoutSink {
     /// 
     /// Format: `[timestamp] [user] [level] message`
     pub fn ci_format() -> Self {
-        use crate::core::log::formatters::TemplateFormatter;
+        use crate::log::formatters::TemplateFormatter;
         Self::new(TemplateFormatter::ci_format())
     }
 
     /// Creates a new sink with JSON output format.
     pub fn json_format() -> Self {
-        use crate::core::log::formatters::TemplateFormatter;
+        use crate::log::formatters::TemplateFormatter;
         Self::new(TemplateFormatter::json_format())
     }
 
@@ -68,7 +67,7 @@ impl ConfigurableStdoutSink {
     /// 
     /// Format: `[HH:MM:SS] [thread] [LEVEL] message`
     pub fn dev_format() -> Self {
-        use crate::core::log::formatters::TemplateFormatter;
+        use crate::log::formatters::TemplateFormatter;
         Self::new(TemplateFormatter::dev_format())
     }
 
@@ -78,7 +77,7 @@ impl ConfigurableStdoutSink {
     /// 
     /// * `template` - The format template string
     pub fn with_template<S: Into<String>>(template: S) -> Self {
-        use crate::core::log::formatters::TemplateFormatter;
+        use crate::log::formatters::TemplateFormatter;
         Self::new(TemplateFormatter::new(template))
     }
 }

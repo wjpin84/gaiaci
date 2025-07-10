@@ -16,8 +16,8 @@
 //! ## Usage
 //! 
 //! ```rust
-//! use gaiaci::core::log::{set_logger, info, warn, error};
-//! use gaiaci::core::log::sinks::stdout::StdoutSink;
+//! use gaiaci_core::log::{set_logger, info, warn, error};
+//! use gaiaci_core::log::sinks::stdout::StdoutSink;
 //! 
 //! // Set up logging
 //! set_logger(StdoutSink);

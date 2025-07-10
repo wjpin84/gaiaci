@@ -60,8 +60,8 @@
 
 use mlua::{Lua, Result as LuaResult, Table};
 use super::GaiaModule;
-use crate::core::log;
-use crate::core::log::sinks::configurable_stdout::ConfigurableStdoutSink;
+use crate::log;
+use crate::log::sinks::configurable_stdout::ConfigurableStdoutSink;
 
 /// The Log module provides structured logging functions for Lua scripts.
 /// 
@@ -244,7 +244,7 @@ fn log_trace(_: &Lua, msg: String) -> LuaResult<()> {
 /// ```
 fn set_format(_: &Lua, template: String) -> LuaResult<()> {
     let sink = ConfigurableStdoutSink::with_template(template);
-    crate::core::log::set_logger(sink);
+    crate::log::set_logger(sink);
     Ok(())
 }
 
@@ -263,7 +263,7 @@ fn set_format(_: &Lua, template: String) -> LuaResult<()> {
 /// ```
 fn set_ci_format(_: &Lua, _: ()) -> LuaResult<()> {
     let sink = ConfigurableStdoutSink::ci_format();
-    crate::core::log::set_logger(sink);
+    crate::log::set_logger(sink);
     Ok(())
 }
 
@@ -281,7 +281,7 @@ fn set_ci_format(_: &Lua, _: ()) -> LuaResult<()> {
 /// ```
 fn set_json_format(_: &Lua, _: ()) -> LuaResult<()> {
     let sink = ConfigurableStdoutSink::json_format();
-    crate::core::log::set_logger(sink);
+    crate::log::set_logger(sink);
     Ok(())
 }
 
@@ -300,7 +300,7 @@ fn set_json_format(_: &Lua, _: ()) -> LuaResult<()> {
 /// ```
 fn set_dev_format(_: &Lua, _: ()) -> LuaResult<()> {
     let sink = ConfigurableStdoutSink::dev_format();
-    crate::core::log::set_logger(sink);
+    crate::log::set_logger(sink);
     Ok(())
 }
 
@@ -319,7 +319,7 @@ fn set_dev_format(_: &Lua, _: ()) -> LuaResult<()> {
 /// ```
 fn set_simple_format(_: &Lua, _: ()) -> LuaResult<()> {
     let sink = ConfigurableStdoutSink::simple();
-    crate::core::log::set_logger(sink);
+    crate::log::set_logger(sink);
     Ok(())
 }
 

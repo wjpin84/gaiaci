@@ -3,7 +3,7 @@
 //! This module provides a simple log sink implementation that outputs
 //! all log messages to standard output (stdout) with basic formatting.
 
-use crate::core::log::{LogSink, LogLevel};
+use crate::log::{LogSink, LogLevel};
 
 /// A log sink that outputs messages to standard output.
 /// 
@@ -21,8 +21,8 @@ use crate::core::log::{LogSink, LogLevel};
 /// ## Example Usage
 /// 
 /// ```rust
-/// use gaiaci::core::log::{set_logger, info, warn};
-/// use gaiaci::core::log::sinks::stdout::StdoutSink;
+/// use gaiaci_core::log::{set_logger, info, warn};
+/// use gaiaci_core::log::sinks::stdout::StdoutSink;
 /// 
 /// // Set up stdout logging
 /// set_logger(StdoutSink);

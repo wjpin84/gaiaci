@@ -5,7 +5,7 @@
 //! and provides convenience functions for each log level.
 
 use std::sync::{Arc, RwLock};
-use crate::core::log::{LogLevel, LogSink};
+use crate::log::{LogLevel, LogSink};
 use once_cell::sync::Lazy;
 
 /// Global logger instance.
@@ -39,8 +39,8 @@ static LOGGER: Lazy<RwLock<Option<Arc<dyn LogSink>>>> = Lazy::new(|| RwLock::new
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::{set_logger, info};
-/// use gaiaci::core::log::sinks::stdout::StdoutSink;
+/// use gaiaci_core::log::{set_logger, info};
+/// use gaiaci_core::log::sinks::stdout::StdoutSink;
 /// 
 /// // Configure logging to stdout
 /// set_logger(StdoutSink);
@@ -73,7 +73,7 @@ pub fn set_logger<S: LogSink>(sink: S) {
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::{log, LogLevel};
+/// use gaiaci_core::log::{log, LogLevel};
 /// 
 /// log(LogLevel::Info, "Custom log message");
 /// log(LogLevel::Error, "Something went wrong");
@@ -100,7 +100,7 @@ pub fn log(level: LogLevel, msg: &str) {
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::trace;
+/// use gaiaci_core::log::trace;
 /// 
 /// trace("Entering function calculate_sum");
 /// trace("Processing item 5 of 10");
@@ -120,7 +120,7 @@ pub fn trace(msg: &str) { log(LogLevel::Trace, msg); }
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::debug;
+/// use gaiaci_core::log::debug;
 /// 
 /// debug("Configuration loaded successfully");
 /// debug("Database connection established");
@@ -140,7 +140,7 @@ pub fn debug(msg: &str) { log(LogLevel::Debug, msg); }
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::info;
+/// use gaiaci_core::log::info;
 /// 
 /// info("Application starting");
 /// info("Processing user request");
@@ -161,7 +161,7 @@ pub fn info(msg: &str)  { log(LogLevel::Info, msg); }
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::warn;
+/// use gaiaci_core::log::warn;
 /// 
 /// warn("Configuration file not found, using defaults");
 /// warn("API rate limit approaching");
@@ -182,7 +182,7 @@ pub fn warn(msg: &str)  { log(LogLevel::Warn, msg); }
 /// # Example
 /// 
 /// ```rust
-/// use gaiaci::core::log::error;
+/// use gaiaci_core::log::error;
 /// 
 /// error("Failed to connect to database");
 /// error("Invalid configuration detected");

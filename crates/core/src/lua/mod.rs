@@ -31,7 +31,7 @@
 //! ```rust
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! use mlua::Lua;
-//! use gaiaci::core::lua::register_gaia_lib;
+//! use gaiaci_core::lua::register_gaia_lib;
 //! 
 //! // Create Lua environment
 //! let lua = Lua::new();
@@ -120,7 +120,7 @@ pub mod assert;
 /// 
 /// ```rust
 /// # use mlua::{Lua, Table, Result as LuaResult};
-/// # use gaiaci::core::lua::GaiaModule;
+/// # use gaiaci_core::lua::GaiaModule;
 /// # 
 /// # fn my_function_impl(_lua: &Lua, _args: ()) -> LuaResult<()> { Ok(()) }
 /// 
@@ -186,7 +186,7 @@ pub trait GaiaModule {
 /// ```rust
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// use mlua::Lua;
-/// use gaiaci::core::lua::register_gaia_lib;
+/// use gaiaci_core::lua::register_gaia_lib;
 /// 
 /// let lua = Lua::new();
 /// register_gaia_lib(&lua)?;
