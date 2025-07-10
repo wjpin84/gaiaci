@@ -1,32 +1,90 @@
-// This file is part of GaiaCI, a continuous integration system.
-// It provides Lua bindings for shell command execution.
-//
-// The shell module provides the following function to Lua scripts:
-// - run(options): Execute a shell command with various options
-//
-// Options table can contain:
-// - cmd (required): The command string to execute
-// - capture (optional, default false): Whether to capture stdout/stderr
-// - env (optional): Table of environment variables to set
-// - cwd (optional): Working directory to execute the command in
-// - shell (optional): Custom shell to use (defaults to /bin/sh on Unix, cmd on Windows)
-//
-// Returns a table with:
-// - success: Boolean indicating if command succeeded
-// - code: Exit code of the command
-// - stdout: Captured stdout (only if capture=true)
-// - stderr: Captured stderr (only if capture=true)
-//
-// This module is essential for CI pipeline scripts that need to run build commands,
-// execute tests, deploy applications, and interact with the system.
+//! # Shell Module
+//! 
+//! This module provides shell command execution capabilities for Lua scripts in GaiaCI.
+//! It enables CI pipelines to run system commands, build tools, test suites, and deployment
+//! scripts with full control over execution environment and output capture.
+//! 
+//! ## Available Functions
+//! 
+//! - `run(options)` - Execute a shell command with comprehensive configuration options
+//! 
+//! ## Command Options
+//! 
+//! The `run` function accepts a table with the following options:
+//! 
+//! - **cmd** (required) - The command string to execute
+//! - **capture** (optional, default: false) - Whether to capture stdout/stderr output
+//! - **env** (optional) - Table of environment variables to set for the command
+//! - **cwd** (optional) - Working directory to execute the command in
+//! - **shell** (optional) - Custom shell to use (defaults to `/bin/sh` on Unix, `cmd` on Windows)
+//! 
+//! ## Return Value
+//! 
+//! Returns a table containing:
+//! 
+//! - **success** - Boolean indicating if the command succeeded (exit code 0)
+//! - **code** - Integer exit code of the command
+//! - **stdout** - Captured stdout as string (only if `capture=true`)
+//! - **stderr** - Captured stderr as string (only if `capture=true`)
+//! 
+//! ## Example Usage in Lua
+//! 
+//! ```lua
+//! -- Simple command execution
+//! local result = shell.run({cmd = "echo hello"})
+//! print("Success:", result.success)
+//! print("Exit code:", result.code)
+//! 
+//! -- Capture output
+//! local result = shell.run({
+//!     cmd = "ls -la",
+//!     capture = true
+//! })
+//! print("Files:", result.stdout)
+//! 
+//! -- Run with custom environment and working directory
+//! local result = shell.run({
+//!     cmd = "npm test",
+//!     capture = true,
+//!     cwd = "/path/to/project",
+//!     env = {
+//!         NODE_ENV = "test",
+//!         CI = "true"
+//!     }
+//! })
+//! 
+//! -- Use custom shell
+//! local result = shell.run({
+//!     cmd = "echo $0",
+//!     capture = true,
+//!     shell = "/bin/bash"
+//! })
+//! ```
+
 use mlua::{Lua, Table, Value, Result as LuaResult};
 use std::process::{Command, Stdio};
 use super::GaiaModule;
 
+/// The Shell module provides command execution functionality for Lua scripts.
+/// 
+/// This struct implements the GaiaModule trait to expose shell command execution
+/// functions to Lua environments, enabling scripts to interact with the system,
+/// run build tools, execute tests, and perform deployment operations.
 pub struct Shell;
 
-// Helper function to build the shell command
 impl GaiaModule for Shell {
+    /// Creates a new Shell module table with command execution functions.
+    /// 
+    /// This method registers the shell command execution function with the Lua environment,
+    /// making it accessible under the `shell` namespace for running system commands.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `lua` - The Lua context to create the module in
+    /// 
+    /// # Returns
+    /// 
+    /// A `LuaResult<Table>` containing the shell execution functions
     fn create(lua: &Lua) -> LuaResult<Table> {
          let shell = lua.create_table()?;
 
@@ -57,7 +115,29 @@ impl GaiaModule for Shell {
 
 }
 
-// Build the shell command based on the operating system
+/// Builds a shell command for execution based on the operating system.
+/// 
+/// This function creates a `Command` instance configured for the target operating system.
+/// On Unix-like systems, it uses the specified shell with the `-c` flag to execute
+/// the command string. On Windows, it uses the specified shell (typically `cmd`)
+/// with the `/C` flag.
+/// 
+/// # Arguments
+/// 
+/// * `cmd` - The command string to execute
+/// * `shell` - The shell executable path to use
+/// 
+/// # Returns
+/// 
+/// A configured `Command` instance ready for execution
+/// 
+/// # Example
+/// 
+/// ```text
+/// build_shell_command("echo hello", "/bin/bash");
+/// // On Unix: /bin/bash -c "echo hello"
+/// // On Windows: cmd /C "echo hello"
+/// ```
 fn build_shell_command(cmd: &str, shell: &str) -> Command {
       let command = if cfg!(windows) {
         let mut c = Command::new(shell);
@@ -71,7 +151,32 @@ fn build_shell_command(cmd: &str, shell: &str) -> Command {
     command
 }
 
-// Apply the current working directory and environment variables to the command
+/// Applies working directory and environment variables to a command.
+/// 
+/// This function configures a `Command` instance with optional working directory
+/// and environment variables. Environment variables from the Lua table are
+/// converted from Lua string values to system environment variables.
+/// 
+/// # Arguments
+/// 
+/// * `command` - The mutable command to configure
+/// * `cwd` - Optional working directory path
+/// * `envs` - Optional Lua table containing environment variable key-value pairs
+/// 
+/// # Returns
+/// 
+/// * `Ok(())` if configuration was successful
+/// * `Err(LuaError)` if there were issues processing the environment table
+/// 
+/// # Example
+/// 
+/// ```lua
+/// -- In Lua, this creates environment variables for the command
+/// local env_vars = {
+///     PATH = "/custom/bin:" .. os.getenv("PATH"),
+///     NODE_ENV = "production"
+/// }
+/// ```
 fn apply_env_and_cwd(command: &mut Command, cwd: Option<String>, envs: Option<Table>) -> LuaResult<()> {
     if let Some(dir) = cwd {
         command.current_dir(dir);
@@ -91,7 +196,34 @@ fn apply_env_and_cwd(command: &mut Command, cwd: Option<String>, envs: Option<Ta
     Ok(())
 }
 
-// Run the command without capturing output
+/// Executes a command without capturing its output.
+/// 
+/// This function runs the command and waits for it to complete, but does not
+/// capture stdout or stderr. The output will be displayed directly to the
+/// terminal. This is useful for interactive commands or when you want to
+/// see real-time output during CI pipeline execution.
+/// 
+/// # Arguments
+/// 
+/// * `lua` - The Lua context for creating the result table
+/// * `command` - The configured command to execute
+/// 
+/// # Returns
+/// 
+/// A Lua table containing:
+/// - `success`: Boolean indicating if the command succeeded
+/// - `code`: Integer exit code of the command
+/// 
+/// # Example
+/// 
+/// ```lua
+/// -- Output goes directly to terminal
+/// local result = shell.run({
+///     cmd = "make build",
+///     capture = false
+/// })
+/// print("Build succeeded:", result.success)
+/// ```
 fn run_without_capture(lua: &Lua, command: &mut Command) -> LuaResult<Value> {
     let status = command.status()?;
 
@@ -101,7 +233,42 @@ fn run_without_capture(lua: &Lua, command: &mut Command) -> LuaResult<Value> {
     Ok(Value::Table(result))
 }
 
-// Run the command and capture its output
+/// Executes a command and captures its output.
+/// 
+/// This function runs the command and captures both stdout and stderr streams,
+/// returning them as strings in the result table. This is essential for
+/// processing command output, parsing build results, or capturing error
+/// messages for further analysis in CI pipelines.
+/// 
+/// # Arguments
+/// 
+/// * `lua` - The Lua context for creating the result table
+/// * `command` - The configured command to execute with output capture
+/// 
+/// # Returns
+/// 
+/// A Lua table containing:
+/// - `success`: Boolean indicating if the command succeeded
+/// - `code`: Integer exit code of the command
+/// - `stdout`: String containing the captured standard output
+/// - `stderr`: String containing the captured standard error
+/// 
+/// # Example
+/// 
+/// ```lua
+/// -- Capture and process output
+/// local result = shell.run({
+///     cmd = "npm test",
+///     capture = true
+/// })
+/// 
+/// if result.success then
+///     print("Tests passed!")
+///     print("Output:", result.stdout)
+/// else
+///     print("Tests failed:", result.stderr)
+/// end
+/// ```
 fn run_with_capture(lua: &Lua, command: &mut Command) -> LuaResult<Value> {
     command.stdout(Stdio::piped()).stderr(Stdio::piped());
     let output = command.output()?;
