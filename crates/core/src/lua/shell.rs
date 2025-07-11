@@ -114,7 +114,7 @@
 
 use mlua::{Lua, Table, Value, Result as LuaResult};
 use std::process::{Command, Stdio};
-use super::GaiaModule;
+use crate::lua::common::GaiaModule;
 
 /// The Shell module provides command execution functionality for Lua scripts.
 /// 

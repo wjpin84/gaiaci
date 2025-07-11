@@ -19,6 +19,10 @@ tracing-subscriber = { workspace = true }
 chrono = { workspace = true }
 once_cell = { workspace = true }
 regex = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+num_cpus = "1.16"
+tokio = { version = "1.0", features = ["full"] }
 
 [dev-dependencies]
 assert_cmd = { workspace = true }

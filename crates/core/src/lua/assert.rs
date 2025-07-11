@@ -40,7 +40,7 @@
 //! ```
 
 use mlua::{Lua, Result as LuaResult, Table, Value, Error};
-use super::GaiaModule;
+use crate::lua::common::GaiaModule;
 use regex;
 
 /// Helper function to create an assertion error with optional custom message.

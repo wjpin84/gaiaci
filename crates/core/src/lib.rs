@@ -1,6 +1,6 @@
 //! # Core Module
 //! 
-//! This module contains the core functionality of GaiaCI, providing essential
+//! This/// use gaiaci_core::lua::register_gaia_lib;module contains the core functionality of GaiaCI, providing essential
 //! infrastructure components that support the continuous integration system.
 //! 
 //! ## Architecture Overview

@@ -50,7 +50,7 @@
 use mlua::{Lua, Result as LuaResult, Table};
 use std::fs;
 use std::path::Path;
-use super::GaiaModule;
+use crate::lua::common::GaiaModule;
 
 /// The File System module provides file and directory operations for Lua scripts.
 /// 

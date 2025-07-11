@@ -32,7 +32,7 @@
 //! ```
 
 use mlua::{Lua, Table, Result as LuaResult};
-use super::GaiaModule;
+use crate::lua::common::GaiaModule;
 
 /// The Environment module provides access to system environment variables.
 /// 

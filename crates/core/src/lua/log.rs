@@ -59,7 +59,7 @@
 //! ```
 
 use mlua::{Lua, Result as LuaResult, Table};
-use super::GaiaModule;
+use crate::lua::common::GaiaModule;
 use crate::log;
 use crate::log::sinks::configurable_stdout::ConfigurableStdoutSink;
 
